@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ping 앱 UX 개선안 — 전략 1~5</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #111; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #fff; padding: 32px 20px; }
+  h1 { font-size: 22px; font-weight: 600; text-align: center; color: #B0F885; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #666; text-align: center; margin-bottom: 40px; }
+  .section { margin-bottom: 56px; }
+  .sec-title { font-size: 15px; color: #B0F885; font-weight: 500; text-align: center; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #1e2a1a; }
+  .sec-sub { font-size: 11px; color: #555; text-align: center; margin-bottom: 20px; }
+  .row { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; align-items: flex-start; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .badge { font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .badge-before { background: #2a2a2a; color: #777; }
+  .badge-after { background: #152b0d; color: #B0F885; }
+  .arrow { font-size: 24px; color: #333; align-self: center; padding-top: 36px; }
+  .itag { border-radius: 7px; padding: 5px 10px; font-size: 9px; max-width: 200px; text-align: center; line-height: 1.5; background: #0c1e08; border: 0.5px solid #2a5a1a; color: #B0F885; }
+  .itag-b { background: #1a1a1a; border: 0.5px solid #2a2a2a; color: #555; }
+  .phone { width: 200px; background: #0c0f0b; border-radius: 28px; border: 2px solid #1e231d; overflow: hidden; display: flex; flex-direction: column; }
+  .ph-bar { background: #0c0f0b; padding: 9px 13px 5px; display: flex; align-items: center; justify-content: space-between; }
+  .ph-t { font-size: 10px; color: #fff; font-weight: 500; }
+  .ph-h { background: #0c0f0b; padding: 4px 12px 8px; display: flex; align-items: center; gap: 7px; border-bottom: 0.5px solid #1a1e19; }
+  .ph-ht { font-size: 12px; color: #fff; font-weight: 500; flex: 1; }
+  .ph-logo { font-size: 12px; color: #B0F885; font-weight: 700; }
+  .ph-body { padding: 9px 10px; display: flex; flex-direction: column; gap: 7px; }
+  .ph-bot { padding: 5px 11px 9px; background: #0a0d09; }
+  .nav { display: flex; justify-content: space-around; }
+  .ni { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .nia { font-size: 14px; color: #B0F885; }
+  .nin { font-size: 14px; color: #333; }
+  .nla { font-size: 6px; color: #B0F885; }
+  .nln { font-size: 6px; color: #333; }
+  .qcard { background: #161a15; border-radius: 12px; padding: 9px 10px; }
+  .qlbl { font-size: 8px; color: #B0F885; font-weight: 500; margin-bottom: 3px; }
+  .qtxt { font-size: 10px; color: #fff; font-weight: 500; line-height: 1.4; }
+  .arow { display: flex; gap: 5px; align-items: center; margin-top: 6px; }
+  .aface { width: 24px; height: 24px; border-radius: 50%; background: #223020; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .adots { font-size: 13px; color: #3a3a3a; letter-spacing: 1px; }
+  .hsec { background: #161a15; border-radius: 12px; padding: 9px 10px; }
+  .hlbl { font-size: 8px; color: #555; margin-bottom: 6px; }
+  .crow { display: flex; gap: 4px; }
+  .cbox { width: 29px; height: 29px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .cbox-lock { background: #1e221d; color: #2a2a2a; border: 1px solid #222; }
+  .cbox-blur { background: #1e2a1a; border: 1px solid #2a4a25; color: rgba(176,248,133,0.22); }
+  .cbox-blur span { filter: blur(2.5px); }
+  .hcost { display: flex; align-items: center; gap: 4px; margin-top: 5px; }
+  .hicon { color: #E75480; font-size: 10px; }
+  .htxt { font-size: 7px; color: #777; }
+  .btn-lock { background: #1e221d; border-radius: 8px; padding: 7px; text-align: center; font-size: 8px; color: #444; margin-top: 5px; border: 1px solid #222; }
+  .btn-free { background: #B0F885; border-radius: 8px; padding: 7px; text-align: center; font-size: 8px; color: #0a1508; font-weight: 700; margin-top: 5px; }
+  .btn-free-sub { font-size: 6px; color: #0a1508; opacity: 0.6; }
+  .btn-pay { background: #152b0d; border-radius: 8px; padding: 6px; text-align: center; font-size: 7px; color: #B0F885; margin-top: 4px; border: 1px solid #2a5a1a; }
+  .nbadge { position: absolute; top: -3px; right: -3px; background: #ff4444; border-radius: 50%; width: 10px; height: 10px; font-size: 6px; color: #fff; display: flex; align-items: center; justify-content: center; }
+  .newbadge { background: #152b0d; border-radius: 5px; padding: 2px 5px; font-size: 7px; color: #B0F885; font-weight: 500; display: inline-block; margin-bottom: 3px; }
+  .divl { height: 0.5px; background: #1a1e19; margin: 3px 0; }
+  .notif-phone { width: 190px; background: #0c0f0b; border-radius: 18px; border: 2px solid #1e231d; overflow: hidden; }
+  .nph-bar { padding: 8px 11px 5px; background: #0c0f0b; display: flex; justify-content: space-between; align-items: center; }
+  .nph-body { padding: 5px 10px 12px; display: flex; flex-direction: column; gap: 5px; }
+  .notif-card { background: #1e231d; border-radius: 10px; padding: 10px 11px; }
+  .notif-header { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+  .notif-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .notif-app { font-size: 9px; font-weight: 600; }
+  .notif-time { font-size: 7px; color: #555; }
+  .notif-title { font-size: 9px; color: #fff; font-weight: 500; margin-bottom: 2px; }
+  .notif-body { font-size: 8px; color: #888; line-height: 1.4; }
+  .notif-actions { margin-top: 7px; display: flex; gap: 5px; }
+  .btn-notif-main { background: #B0F885; border-radius: 6px; padding: 4px 8px; font-size: 8px; color: #0a1508; font-weight: 700; flex: 1; text-align: center; }
+  .btn-notif-sec { background: #1a2a1a; border-radius: 6px; padding: 4px 8px; font-size: 8px; color: #666; text-align: center; }
+  .tag-info { font-size: 7px; color: #333; text-align: center; }
+  .section-divider { border: none; border-top: 1px solid #1e2a1a; margin: 40px 0; }
+</style>
+</head>
+<body>
+
+<h1>Ping — UX 개선안</h1>
+<p class="subtitle">데이터 분석 기반 서비스 활성도 개선 전략 1~5 · Before / After</p>
+
+<!-- ====== 전략 1 ====== -->
+<div class="section">
+  <div class="sec-title">전략 1 — 초성 열람 경험을 첫 결제 관문으로</div>
+  <div class="sec-sub">타겟: 투표 수신형 핵심 유저 (투표는 받았지만 초성을 열지 않은 유저, 2,378명)</div>
+  <div class="row">
+    <div class="col">
+      <span class="badge badge-before">Before</span>
+      <div class="phone">
+        <div class="ph-bar"><span class="ph-t">9:41</span><span style="font-size:8px;color:#fff">●●●</span></div>
+        <div class="ph-h"><span style="font-size:16px;color:#fff">‹</span><span class="ph-ht">받은 Ping</span><span class="ph-logo">Ping*</span></div>
+        <div class="ph-body">
+          <div class="qcard">
+            <div class="qlbl">받은 Ping</div>
+            <div class="qtxt">"이 친구와 무계획 여행을 가고 싶다!"</div>
+            <div class="arow"><div class="aface">🙈</div><span class="adots">• • •</span></div>
+          </div>
+          <div class="hsec">
+            <div class="hlbl">누가 나를 선택했을까?</div>
+            <div class="crow">
+              <div class="cbox cbox-lock"><span style="color:#2a2a2a">?</span></div>
+              <div class="cbox cbox-lock"><span style="color:#2a2a2a">?</span></div>
+              <div class="cbox cbox-lock"><span style="color:#2a2a2a">?</span></div>
+            </div>
+            <div class="hcost"><span class="hicon">♥</span><span class="htxt">초성 1개 열람 = 하트 100개</span></div>
+            <div class="btn-lock">하트가 부족해요</div>
+            <div class="btn-pay">♥ 하트 충전하기</div>
+          </div>
+        </div>
+        <div class="ph-bot"><div class="nav">
+          <div class="ni"><span class="nin">🕐</span><span class="nln">타임라인</span></div>
+          <div class="ni" style="position:relative"><span class="nia">🔔</span><div class="nbadge">2</div><span class="nla">받은 Ping</span></div>
+          <div class="ni"><span class="nin">🏠</span><span class="nln">홈</span></div>
+          <div class="ni"><span class="nin">💬</span><span class="nln">메시지</span></div>
+          <div class="ni"><span class="nin">👤</span><span class="nln">프로필</span></div>
+        </div></div>
+      </div>
+      <div class="itag itag-b">하트 0개 → 완전 잠금<br>이탈 발생</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col">
+      <span class="badge badge-after">After</span>
+      <div class="phone">
+        <div class="ph-bar"><span class="ph-t">9:41</span><span style="font-size:8px;color:#fff">●●●</span></div>
+        <div class="ph-h"><span style="font-size:16px;color:#fff">‹</span><span class="ph-ht">받은 Ping</span><span class="ph-logo">Ping*</span></div>
+        <div class="ph-body">
+          <div class="qcard">
+            <div class="newbadge">새 Ping 도착!</div>
+            <div class="qlbl">받은 Ping</div>
+            <div class="qtxt">"이 친구와 무계획 여행을 가고 싶다!"</div>
+            <div class="arow"><div class="aface">🙈</div><span class="adots">• • •</span></div>
+          </div>
+          <div class="hsec">
+            <div class="hlbl">첫 힌트는 무료에요 <span style="color:#B0F885">✦</span></div>
+            <div class="crow">
+              <div class="cbox cbox-blur"><span>ㅎ</span></div>
+              <div class="cbox cbox-blur"><span>ㅈ</span></div>
+              <div class="cbox cbox-blur"><span>ㅇ</span></div>
+            </div>
+            <div style="font-size:7px;color:#555;margin-top:4px">초성이 희미하게 보여요. 지금 확인해볼까요?</div>
+            <div class="btn-free">1회 무료로 초성 확인하기<div class="btn-free-sub">지금만 무료 · 이후 ♥ 100개</div></div>
+            <div class="divl"></div>
+            <div style="font-size:7px;color:#444;text-align:center">더 많은 힌트를 보려면 하트를 충전하세요</div>
+            <div class="btn-pay">♥ 하트 충전하기</div>
+          </div>
+        </div>
+        <div class="ph-bot"><div class="nav">
+          <div class="ni"><span class="nin">🕐</span><span class="nln">타임라인</span></div>
+          <div class="ni" style="position:relative"><span class="nia">🔔</span><div class="nbadge">2</div><span class="nla">받은 Ping</span></div>
+          <div class="ni"><span class="nin">🏠</span><span class="nln">홈</span></div>
+          <div class="ni"><span class="nin">💬</span><span class="nln">메시지</span></div>
+          <div class="ni"><span class="nin">👤</span><span class="nln">프로필</span></div>
+        </div></div>
+      </div>
+      <div class="itag">블러 미리보기 + 무료 CTA<br>무료 경험 → 결제 전환 유도</div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ====== 전략 2 ====== -->
+<div class="section">
+  <div class="sec-title">전략 2 — 학급 단위 "클래스 리더" 게이미피케이션</div>
+  <div class="sec-sub">타겟: 학급 내 네트워크형 핵심 유저 · 레퍼런스: Airbnb 슈퍼호스트 배지</div>
+  <div class="row">
+    <div class="col">
+      <span class="badge badge-after">타임라인 화면</span>
+      <div class="phone">
+        <div class="ph-bar"><span class="ph-t">9:41</span><span style="font-size:8px;color:#fff">●●●</span></div>
+        <div class="ph-h"><span style="font-size:16px;color:#fff">‹</span><span class="ph-ht">타임라인</span><span class="ph-logo">Ping*</span></div>
+        <div class="ph-body">
+          <div style="background:#0e2509;border-radius:12px;padding:9px 10px;border:1px solid #B0F885">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+              <div style="width:26px;height:26px;border-radius:50%;background:#1a3a0d;display:flex;align-items:center;justify-content:center;font-size:13px">😊</div>
+              <div>
+                <div style="font-size:10px;color:#fff;font-weight:500">김민준</div>
+                <span style="background:#B0F885;color:#0a1508;font-size:7px;padding:1px 6px;border-radius:4px;font-weight:700">✨ 클래스 리더</span>
+              </div>
+              <span style="font-size:7px;color:#444;margin-left:auto">방금</span>
+            </div>
+            <div style="font-size:8px;color:#bbb;line-height:1.4">"이 친구와 무계획 여행을 가고 싶다!"<br>에서 선택받은 초성을 확인했어요</div>
+            <div style="margin-top:7px;background:#152b0d;border-radius:7px;padding:5px 8px;display:flex;align-items:center;gap:5px">
+              <span style="font-size:11px">👀</span>
+              <div style="flex:1">
+                <div style="font-size:8px;color:#B0F885;font-weight:500">나도 초성 확인하고 싶어요!</div>
+                <div style="font-size:7px;color:#5a8a4a">1회 무료로 확인할 수 있어요</div>
+              </div>
+              <div style="background:#B0F885;border-radius:5px;padding:3px 6px;font-size:7px;color:#0a1508;font-weight:700;white-space:nowrap">확인 →</div>
+            </div>
+          </div>
+          <div style="background:#161a15;border-radius:12px;padding:8px 10px">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
+              <div style="width:24px;height:24px;border-radius:50%;background:#1a2a1a;display:flex;align-items:center;justify-content:center;font-size:12px">🙂</div>
+              <div><div style="font-size:9px;color:#fff">이수진</div><div style="font-size:7px;color:#444">1학년 2반</div></div>
+              <span style="font-size:7px;color:#444;margin-left:auto">3분 전</span>
+            </div>
+            <div style="font-size:8px;color:#888">"친구들을 제일 많이 챙겨주는 사람"<br>에서 선택받았어요!</div>
+          </div>
+          <div style="background:#0c1508;border-radius:7px;padding:5px 9px;border:0.5px solid #2a3a1a;text-align:center">
+            <div style="font-size:7px;color:#B0F885">우리 반 클래스 리더가 아직 없어요</div>
+            <div style="font-size:6px;color:#5a8a4a;margin-top:1px">첫 번째 레전드가 되어볼까요? ✦</div>
+          </div>
+        </div>
+      </div>
+      <div class="itag">클래스 리더 배지 타임라인 상단 노출<br>→ 반 친구들에게 결제 신호 전파</div>
+    </div>
+    <div class="col">
+      <span class="badge badge-after">프로필 배지</span>
+      <div class="phone">
+        <div class="ph-bar"><span class="ph-t">9:41</span><span style="font-size:8px;color:#fff">●●●</span></div>
+        <div class="ph-h"><span style="font-size:16px;color:#fff">‹</span><span class="ph-ht">친구 프로필</span><span class="ph-logo">Ping*</span></div>
+        <div class="ph-body">
+          <div style="background:#161a15;border-radius:13px;padding:14px 12px;text-align:center">
+            <div style="width:54px;height:54px;border-radius:50%;background:#0e2509;border:2px solid #B0F885;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:25px">😊</div>
+            <div style="font-size:13px;color:#fff;font-weight:500;margin-bottom:3px">김민준</div>
+            <div style="font-size:7px;color:#888;margin-bottom:8px">1학년 2반 · 단국고등학교</div>
+            <div style="display:flex;justify-content:center;margin-bottom:10px">
+              <div style="background:#0e2509;border:1px solid #B0F885;border-radius:6px;padding:3px 10px">
+                <span style="font-size:8px;color:#B0F885;font-weight:700">✨ 클래스 리더</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-around;border-top:0.5px solid #1e231d;padding-top:10px">
+              <div style="text-align:center"><div style="font-size:13px;color:#B0F885;font-weight:600">64</div><div style="font-size:7px;color:#555">친구</div></div>
+              <div style="text-align:center"><div style="font-size:13px;color:#B0F885;font-weight:600">35,379</div><div style="font-size:7px;color:#555">Ping</div></div>
+              <div style="text-align:center"><div style="font-size:13px;color:#E75480;font-weight:600">♥ 243</div><div style="font-size:7px;color:#555">하트</div></div>
+            </div>
+            <div style="background:#B0F885;border-radius:9px;padding:8px;font-size:10px;color:#0a1508;font-weight:700;margin-top:10px">친구 신청하기</div>
+          </div>
+        </div>
+      </div>
+      <div class="itag">배지가 프로필에 눈에 띄게 표시<br>에어비앤비 슈퍼호스트 배지와 동일 원리</div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ====== 전략 3 ====== -->
+<div class="section">
+  <div class="sec-title">전략 3 — 허브 유저 초대 인센티브 극대화</div>
+  <div class="sec-sub">타겟: 초대 발송 상위 유저 (초대 발송자의 96.8%가 핵심 유저) · 레퍼런스: Tesla Referral, Dropbox</div>
+  <div class="row">
+    <div class="col">
+      <span class="badge badge-after">친구 초대 대시보드</span>
+      <div class="phone">
+        <div class="ph-bar"><span class="ph-t">9:41</span><span style="font-size:8px;color:#fff">●●●</span></div>
+        <div class="ph-h"><span style="font-size:16px;color:#fff">‹</span><span class="ph-ht">친구 초대</span><span class="ph-logo">Ping*</span></div>
+        <div class="ph-body">
+          <div style="background:#0e2509;border-radius:12px;padding:10px 11px;border:0.5px solid #2a5a1a">
+            <div style="font-size:8px;color:#B0F885;font-weight:500;margin-bottom:6px">내 초대 현황</div>
+            <div style="display:flex;justify-content:space-around;margin-bottom:8px">
+              <div style="text-align:center"><div style="font-size:16px;color:#B0F885;font-weight:700">5</div><div style="font-size:7px;color:#5a8a4a">초대 발송</div></div>
+              <div style="text-align:center"><div style="font-size:16px;color:#fff;font-weight:700">3</div><div style="font-size:7px;color:#5a8a4a">가입 완료</div></div>
+              <div style="text-align:center"><div style="font-size:16px;color:#E75480;font-weight:700">1</div><div style="font-size:7px;color:#5a8a4a">첫 결제!</div></div>
+            </div>
+            <div style="background:#0c1508;border-radius:6px;overflow:hidden;height:5px;margin-bottom:3px">
+              <div style="background:#B0F885;height:100%;width:60%;border-radius:6px"></div>
+            </div>
+            <div style="font-size:6px;color:#5a8a4a;text-align:right">3/5명 가입</div>
+          </div>
+          <div style="background:#161a15;border-radius:12px;padding:9px 11px">
+            <div style="font-size:8px;color:#888;margin-bottom:6px">보상 현황</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;align-items:center;gap:7px">
+                <div style="width:6px;height:6px;border-radius:50%;background:#B0F885"></div>
+                <span style="font-size:8px;color:#bbb;flex:1">친구 가입 완료</span>
+                <span style="font-size:8px;color:#B0F885;font-weight:500">♥ +30개</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:7px">
+                <div style="width:6px;height:6px;border-radius:50%;background:#E75480"></div>
+                <span style="font-size:8px;color:#bbb;flex:1">친구 첫 결제 완료</span>
+                <span style="font-size:8px;color:#E75480;font-weight:500">♥ +50개</span>
+              </div>
+            </div>
+            <div style="margin-top:7px;background:#0c1508;border-radius:7px;padding:5px 8px;display:flex;align-items:center;gap:5px">
+              <span style="font-size:11px">🎉</span>
+              <span style="font-size:7px;color:#B0F885">"이수진"님이 첫 결제를 했어요! ♥ +50</span>
+            </div>
+          </div>
+          <div style="background:#B0F885;border-radius:9px;padding:8px;text-align:center">
+            <div style="font-size:10px;color:#0a1508;font-weight:700">친구에게 초대 링크 보내기</div>
+            <div style="font-size:7px;color:#0a1508;opacity:0.6;margin-top:1px">카카오톡 · 문자로 1초 만에</div>
+          </div>
+          <div style="background:#161a15;border-radius:8px;padding:7px;text-align:center">
+            <div style="font-size:8px;color:#555">초대한 친구 목록 보기</div>
+          </div>
+        </div>
+      </div>
+      <div class="itag">Dropbox 레퍼럴 대시보드 원리<br>초대 진행률 시각화 → 동기 부여<br>친구 결제 시 초대자 즉시 보상</div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ====== 전략 4 ====== -->
+<div class="section">
+  <div class="sec-title">전략 4 — 온보딩 완료 후 첫 아하 모먼트 가속화</div>
+  <div class="sec-sub">생존 분석: 중앙 생존일 이웃 4일 / 비이웃 0일 → 첫 Ping 경험을 최대한 빠르게 만들어야 이탈 방지</div>
+  <div class="row">
+    <div class="col">
+      <span class="badge badge-before">Before</span>
+      <div class="phone">
+        <div class="ph-bar"><span class="ph-t">9:41</span><span style="font-size:8px;color:#fff">●●●</span></div>
+        <div class="ph-h"><span style="font-size:16px;color:#fff">‹</span><span class="ph-ht">앱 사용 가이드</span><span class="ph-logo">Ping*</span></div>
+        <div style="flex:1;padding:0;display:flex;flex-direction:column;background:#0c0f0b">
+          <div style="padding:16px 14px 10px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+            <div style="font-size:28px">📱</div>
+            <div style="font-size:12px;color:#fff;font-weight:500;text-align:center">Ping 사용법</div>
+            <div style="display:flex;flex-direction:column;gap:6px;width:100%">
+              <div style="background:#161a15;border-radius:8px;padding:7px 9px;display:flex;gap:7px;align-items:center">
+                <span style="font-size:13px">🗳️</span>
+                <div><div style="font-size:8px;color:#bbb">질문에 친구를 선택해요</div></div>
+              </div>
+              <div style="background:#161a15;border-radius:8px;padding:7px 9px;display:flex;gap:7px;align-items:center">
+                <span style="font-size:13px">🔔</span>
+                <div><div style="font-size:8px;color:#bbb">선택받으면 알림이 와요</div></div>
+              </div>
+              <div style="background:#161a15;border-radius:8px;padding:7px 9px;display:flex;gap:7px;align-items:center">
+                <span style="font-size:13px">♥</span>
+                <div><div style="font-size:8px;color:#bbb">하트로 초성을 확인해요</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:10px 14px 14px">
+            <div style="background:#1e231d;border-radius:10px;padding:9px;text-align:center;font-size:10px;color:#666">확인</div>
+            <div style="font-size:7px;color:#333;text-align:center;margin-top:5px">→ 메인 홈으로 이동<br>유저가 혼자 탐색해야 함</div>
+          </div>
+        </div>
+      </div>
+      <div class="itag itag-b">텍스트 가이드만 보고 홈으로 이동<br>첫 Ping 경험까지 시간 걸림<br>방향 모르면 D+0 바로 이탈</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="col">
+      <span class="badge badge-after">After</span>
+      <div class="phone">
+        <div class="ph-bar"><span class="ph-t">9:41</span><span style="font-size:8px;color:#fff">●●●</span></div>
+        <div class="ph-h"><span style="font-size:16px;color:#fff">‹</span><span class="ph-ht">준비 완료!</span><span class="ph-logo">Ping*</span></div>
+        <div style="flex:1;padding:0;display:flex;flex-direction:column;background:#0c0f0b">
+          <div style="padding:14px 13px 8px;flex:1;display:flex;flex-direction:column;gap:8px">
+            <div style="background:#0e2509;border-radius:12px;padding:12px;text-align:center;border:0.5px solid #2a5a1a">
+              <div style="font-size:20px;margin-bottom:5px">🎉</div>
+              <div style="font-size:11px;color:#fff;font-weight:600;margin-bottom:2px">27명 친구 연결 완료!</div>
+              <div style="font-size:8px;color:#5a8a4a">친구들이 지금 Ping을 기다리고 있어요</div>
+            </div>
+            <div style="background:#161a15;border-radius:10px;padding:9px">
+              <div style="font-size:8px;color:#888;margin-bottom:6px">지금 할 수 있는 것</div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <div style="background:#0c0f0b;border-radius:7px;padding:6px 8px;display:flex;align-items:center;gap:7px;border:1px solid #B0F885">
+                  <span style="font-size:13px">🗳️</span>
+                  <div style="flex:1"><div style="font-size:8px;color:#B0F885;font-weight:500">첫 Ping 시작하기</div><div style="font-size:7px;color:#5a8a4a">친구들에게 투표해보세요!</div></div>
+                  <span style="font-size:9px;color:#B0F885">→</span>
+                </div>
+                <div style="background:#0c0f0b;border-radius:7px;padding:6px 8px;display:flex;align-items:center;gap:7px">
+                  <span style="font-size:13px">👥</span>
+                  <div style="flex:1"><div style="font-size:8px;color:#888">친구 더 추가하기</div><div style="font-size:7px;color:#444">알 수도 있는 친구 확인</div></div>
+                  <span style="font-size:9px;color:#444">→</span>
+                </div>
+              </div>
+            </div>
+            <div style="background:#B0F885;border-radius:10px;padding:11px;text-align:center">
+              <div style="font-size:11px;color:#0a1508;font-weight:700">지금 바로 첫 Ping 시작하기</div>
+              <div style="font-size:7px;color:#0a1508;opacity:0.65;margin-top:2px">START 하면 +200 하트를 드려요!</div>
+            </div>
+            <div style="background:#0e1e08;border-radius:8px;padding:6px 9px;display:flex;align-items:center;gap:6px;border:0.5px solid #2a4a1a">
+              <span style="font-size:12px">📅</span>
+              <div><div style="font-size:8px;color:#B0F885">D+3 예약 알림</div><div style="font-size:7px;color:#5a8a4a">무료 초성 열람권을 보내드릴게요!</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="itag">온보딩 완료 즉시 첫 Ping 유도<br>START 보상(+200 하트)으로 동기 부여<br>D+3 무료 열람권으로 4일 이탈 방어</div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- ====== 전략 5 ====== -->
+<div class="section">
+  <div class="sec-title">전략 5 — 유저 유형별 맞춤 푸시 알림</div>
+  <div class="sec-sub">핵심 유저 3개 유형(네트워크형 / 투표 수신형 / 적극 반응형)별로 다른 메시지·타이밍·CTA 설계</div>
+  <div class="row">
+    <div class="col">
+      <span class="badge badge-after">네트워크형</span>
+      <div class="notif-phone">
+        <div class="nph-bar"><span style="font-size:9px;color:#777">오후 7:24</span><span style="font-size:7px;color:#777">●●●</span></div>
+        <div class="nph-body">
+          <div class="notif-card">
+            <div class="notif-header">
+              <div class="notif-icon" style="background:#0e2509;border:1px solid #B0F885">🔔</div>
+              <div><div class="notif-app" style="color:#B0F885">Ping</div><div class="notif-time">지금</div></div>
+            </div>
+            <div class="notif-title">친구들이 지금 투표 중이에요!</div>
+            <div class="notif-body">먼저 참여하면 더 많이 선택받을 수 있어요. 지금 START 해볼까요?</div>
+            <div class="notif-actions">
+              <div class="btn-notif-main">Ping 시작하기</div>
+              <div class="btn-notif-sec">나중에</div>
+            </div>
+          </div>
+          <div class="tag-info">친구 많지만 투표 적은 유저<br>귀가 시간대(오후 7~9시) 발송</div>
+        </div>
+      </div>
+      <div class="itag" style="width:190px">투표 참여 유도<br>네트워크 확장형 → 콘텐츠 참여로</div>
+    </div>
+    <div class="col">
+      <span class="badge badge-after">투표 수신형</span>
+      <div class="notif-phone">
+        <div class="nph-bar"><span style="font-size:9px;color:#777">오후 4:11</span><span style="font-size:7px;color:#777">●●●</span></div>
+        <div class="nph-body">
+          <div class="notif-card">
+            <div class="notif-header">
+              <div class="notif-icon" style="background:#0e2509;border:1px solid #B0F885">💌</div>
+              <div><div class="notif-app" style="color:#B0F885">Ping</div><div class="notif-time">방금</div></div>
+            </div>
+            <div class="notif-title">누군가 오늘 당신을 선택했어요</div>
+            <div class="notif-body">초성 힌트로 누군지 알아볼까요?<br>지금 1회 무료로 확인할 수 있어요 ✦</div>
+            <div class="notif-actions">
+              <div class="btn-notif-main">초성 무료 확인하기</div>
+            </div>
+          </div>
+          <div class="tag-info">투표 수신 직후 즉시 발송<br>초성 미열람 유저 타겟</div>
+        </div>
+      </div>
+      <div class="itag" style="width:190px">투표 수신 직후 타이밍<br>무료 초성 열람 → 결제 전환</div>
+    </div>
+    <div class="col">
+      <span class="badge badge-after">적극 반응형</span>
+      <div class="notif-phone">
+        <div class="nph-bar"><span style="font-size:9px;color:#777">오후 9:02</span><span style="font-size:7px;color:#777">●●●</span></div>
+        <div class="nph-body">
+          <div class="notif-card">
+            <div class="notif-header">
+              <div class="notif-icon" style="background:#2a0a0a;border:1px solid #E75480">♥</div>
+              <div><div class="notif-app" style="color:#E75480">Ping</div><div class="notif-time">지금</div></div>
+            </div>
+            <div class="notif-title">하트가 거의 다 됐어요!</div>
+            <div class="notif-body">지금 충전하면 하트 2배로 드려요.<br>더 많은 초성을 확인해보세요!</div>
+            <div class="notif-actions">
+              <div class="btn-notif-main">2배 충전하기</div>
+              <div class="btn-notif-sec">나중에</div>
+            </div>
+          </div>
+          <div class="tag-info">하트 잔량 0 시점 자동 발송<br>초성 열람 경험 유저 타겟</div>
+        </div>
+      </div>
+      <div class="itag" style="width:190px">하트 소진 시점 타겟<br>2배 충전 혜택으로 즉시 결제 유도</div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;font-size:10px;color:#333;padding:24px 0 8px">
+  Ping UX 개선안 · 데이터 분석 기반 비즈니스 전략 시각화
+</div>
+
+</body>
+</html>

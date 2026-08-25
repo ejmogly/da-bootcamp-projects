@@ -1,0 +1,31 @@
+# Data Analyst Portfolio Dependencies
+# Python >= 3.9
+
+# Core Data Science & Analysis
+numpy>=1.22.0
+pandas>=1.5.0
+scipy>=1.9.0
+
+# Visualization
+matplotlib>=3.6.0
+seaborn>=0.12.0
+plotly>=5.13.0
+
+# Machine Learning & Modeling
+scikit-learn>=1.2.0
+xgboost>=1.7.0
+lightgbm>=3.3.0
+catboost>=1.1.0
+imblearn>=0.0
+
+# Geospatial & Utilities
+geopandas>=0.12.0
+folium>=0.14.0
+pypdf>=3.0.0
+openpyxl>=3.0.0
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+
+# Jupyter Environment
+jupyter>=1.0.0
+ipykernel>=6.20.0
